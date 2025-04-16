@@ -1,0 +1,9 @@
+---
+description: Code specification
+globs: 
+alwaysApply: false
+---
+
+# Code specification
+
+- Only use `bun install` when you want to install dependencies
