@@ -1,0 +1,15 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "type": "bun",
+      "request": "launch",
+      "name": "Launch Program",
+      "program": "${workspaceFolder}/src/index.ts",
+      "runtimeArgs": [
+        "dev"
+      ],
+      "cwd": "${workspaceFolder}"
+    }
+  ]
+}
