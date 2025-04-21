@@ -1,0 +1,116 @@
+import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
+import { OpenAPIV3 } from 'openapi-types';
+import { z } from 'zod';
+
+/**
+ * Register tools from OpenAPI specification
+ */
+export const registerTools = async (
+  server: McpServer,
+  openApiDoc: OpenAPIV3.Document,
+  baseUrl: string,
+  callTool: (
+    toolInfo: {
+      toolId: string;
+      description: string;
+      inputSchema: Record<string, z.ZodType>;
+      method: string;
+      path: string;
+    },
+    params: Record<string, any>,
+  ) => Promise<any>,
+) => {
+  for (const [path, pathItem] of Object.entries(openApiDoc.paths)) {
+    if (!pathItem) continue;
+
+    for (const [method, operation] of Object.entries(pathItem)) {
+      if (method === 'parameters' || typeof operation !== 'object') continue;
+
+      // TODO handle when operation is a array
+
+      if (Array.isArray(operation)) {
+        continue;
+      }
+
+      const cleanPath = path.replace(/^\//, '');
+      const toolId = `${method.toUpperCase()}-${cleanPath}`.replace(
+        /[^a-zA-Z0-9-]/g,
+        '-',
+      );
+
+      server.server.sendLoggingMessage({
+        level: 'info',
+        message: toolId,
+      });
+
+      /** the parameter has a name and in */
+      const validParameters =
+        operation?.parameters?.filter(
+          (param) => 'name' in param && 'in' in param,
+        ) || [];
+
+      // Create input schema from parameters
+      const inputSchema: Record<string, z.ZodType> = Object.fromEntries(
+        validParameters.map((param) => {
+          const key = param.name;
+          const value = (() => {
+            const { schema, required } = param;
+            if (!schema) {
+              return required ? z.string() : z.string().optional();
+            }
+
+            if ('$ref' in schema) {
+              // TODO: handle reference objects
+              return required ? z.any() : z.any().optional();
+            }
+
+            if (schema.type === 'array') {
+              // TODO: handle array types
+              return required ? z.array(z.any()) : z.array(z.any()).optional();
+            }
+
+            if (schema.type === undefined) {
+              // TODO: handle undefined types
+              return required ? z.any() : z.any().optional();
+            }
+
+            const schemaValueMap = {
+              object: z.object({}),
+              string: z.string(),
+              number: z.number(),
+              integer: z.number(),
+              boolean: z.boolean(),
+            };
+            return required
+              ? schemaValueMap[schema.type]
+              : schemaValueMap[schema.type].optional();
+          })();
+          return [key, value];
+        }),
+      );
+
+      const description =
+        operation.summary ||
+        operation.description ||
+        `${method.toUpperCase()} ${path}`;
+
+      // Register the tool
+      server.tool(toolId, description, inputSchema, async (params) => {
+        const data = await callTool(
+          {
+            toolId,
+            description,
+            inputSchema,
+            method,
+            path,
+          },
+          params,
+        );
+
+        return {
+          content: [{ type: 'text', text: JSON.stringify(data, null, 2) }],
+        };
+      });
+    }
+  }
+};
