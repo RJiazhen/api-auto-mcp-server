@@ -16,6 +16,7 @@ const main = async () => {
   const apiObject = await parseOpenApi(config.openapiUrl);
 
   const baseUrl = new URL(config.openapiUrl).origin;
+  const cookie = config.cookie;
 
   /** the callback function for the tools */
   const toolCallback = async (
@@ -28,18 +29,17 @@ const main = async () => {
     },
     params: Record<string, any>,
   ) => {
-    // TODO: handle when param is in url
+    // TODO handle when param is in url
+    const method = toolInfo.method.toLowerCase();
     const url = new URL(toolInfo.path, baseUrl).toString();
-    // TODO add cookie
-    const response = await (toolInfo.method === 'GET'
-      ? fetch(url)
-      : fetch(url, {
-          method: toolInfo.method,
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(params),
-        }));
+    const response = await fetch(url, {
+      method,
+      headers: {
+        'Content-Type': 'application/json',
+        Cookie: cookie,
+      },
+      ...(method !== 'get' && { body: JSON.stringify(params) }),
+    });
     if (!response.ok) {
       throw new Error(`API request failed: ${response.statusText}`);
     }
@@ -54,11 +54,6 @@ const main = async () => {
       level: 'info',
       message: 'Server started',
     },
-  });
-
-  server.server.sendLoggingMessage({
-    level: 'info',
-    message: `config: ${JSON.stringify(config)}`,
   });
 
   // Start receiving messages on stdin and sending messages on stdout
