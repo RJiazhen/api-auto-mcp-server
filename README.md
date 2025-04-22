@@ -17,5 +17,5 @@ This project was created using `bun init` in bun v1.1.43. [Bun](https://bun.sh) 
 To inspect the server:
 
 ```bash
-npx @modelcontextprotocol/inspector bun dev --cwd D:\\Projects\\mcp\\api-auto-mcp-server\\api-auto-mcp-server --openapi-url http://localhost:3000/openapi
+npx @modelcontextprotocol/inspector bun dev --cwd D:\\Projects\\mcp\\api-auto-mcp-server\\api-auto-mcp-server --openapi-url http://localhost:3000/openapi --cookie "auth=your-cookie-here"
 ```
