@@ -14,10 +14,11 @@ export const registerTools = async (
       toolId: string;
       description: string;
       inputSchema: Record<string, z.ZodType>;
-      method: string;
+      method: OpenAPIV3.HttpMethods;
       path: string;
     },
     params: Record<string, any>,
+    operationObject: OpenAPIV3.OperationObject,
   ) => Promise<any>,
 ) => {
   for (const [path, pathItem] of Object.entries(openApiDoc.paths)) {
@@ -105,6 +106,7 @@ export const registerTools = async (
             path,
           },
           params,
+          operation,
         );
 
         return {
