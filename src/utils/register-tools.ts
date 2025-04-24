@@ -39,10 +39,11 @@ export const registerTools = async (
         '-',
       );
 
-      server.server.sendLoggingMessage({
-        level: 'info',
-        message: toolId,
-      });
+      // XXX change to send logging message only when not in production
+      // server.server.sendLoggingMessage({
+      //   level: 'info',
+      //   message: toolId,
+      // });
 
       /** the parameter has a name and in */
       const validParameters =
