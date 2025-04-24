@@ -37,7 +37,9 @@ export const getConfig = () => {
     })
     .parseSync();
 
-  const keyList = Object.keys(DEFAULT_CONFIG);
+  const keyList = Object.keys(
+    DEFAULT_CONFIG,
+  ) as (keyof typeof DEFAULT_CONFIG)[];
 
   const config = Object.fromEntries(
     keyList.map((key) => {
