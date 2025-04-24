@@ -41,7 +41,7 @@ export const getConfig = () => {
 
   const config = Object.fromEntries(
     keyList.map((key) => {
-      const configValue = configOfArgs[key] ?? configOfEnvVars[key] ?? value;
+      const configValue = configOfArgs[key] ?? configOfEnvVars[key];
       if (!configValue) {
         throw new Error(`${key} is not set`);
       }
