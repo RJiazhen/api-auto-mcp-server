@@ -1,9 +1,23 @@
 {
   "name": "api-auto-mcp-server",
+  "version": "0.1.1",
+  "keywords": [
+    "mcp",
+    "modelcontextprotocol",
+    "openapi",
+    "mcp-server"
+  ],
+  "author": "Ruan Jiazhen",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/RJiazhen/api-auto-mcp-server"
+  },
+  "license": "MIT",
   "module": "src/index.ts",
   "type": "module",
   "scripts": {
-    "dev": "bun --watch run src/index.ts"
+    "dev": "bun --watch run src/index.ts",
+    "build": "bun build src/index.ts --outfile dist/index.js --target node"
   },
   "devDependencies": {
     "@types/bun": "latest",
