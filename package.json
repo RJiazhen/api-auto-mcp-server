@@ -1,6 +1,6 @@
 {
   "name": "api-auto-mcp-server",
-  "version": "0.1.1",
+  "version": "0.1.3",
   "keywords": [
     "mcp",
     "modelcontextprotocol",
@@ -13,11 +13,14 @@
     "url": "https://github.com/RJiazhen/api-auto-mcp-server"
   },
   "license": "MIT",
+  "bin": {
+    "api-auto-mcp-server": "dist/index.js"
+  },
   "module": "src/index.ts",
   "type": "module",
   "scripts": {
     "dev": "bun --watch run src/index.ts",
-    "build": "bun build src/index.ts --outfile dist/index.js --target node"
+    "build": "bun build src/index.ts --outfile dist/index.js --target bun"
   },
   "devDependencies": {
     "@types/bun": "latest",

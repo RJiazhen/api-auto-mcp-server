@@ -1,3 +1,4 @@
+#!/usr/bin/env node
 import { getConfig } from '@/utils/get-config.js';
 import { parseOpenApi } from '@/utils/parse-openapi.js';
 import { registerTools } from '@/utils/register-tools.js';
