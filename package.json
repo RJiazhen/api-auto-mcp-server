@@ -1,6 +1,6 @@
 {
   "name": "api-auto-mcp-server",
-  "version": "0.1.3",
+  "version": "0.1.4",
   "keywords": [
     "mcp",
     "modelcontextprotocol",
@@ -13,6 +13,10 @@
     "url": "https://github.com/RJiazhen/api-auto-mcp-server"
   },
   "license": "MIT",
+  "files": [
+    "dist",
+    "src"
+  ],
   "bin": {
     "api-auto-mcp-server": "dist/index.js"
   },
