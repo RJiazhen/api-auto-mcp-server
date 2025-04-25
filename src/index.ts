@@ -133,16 +133,16 @@ const main = async () => {
         .join('&') || '';
 
     // XXX change to send logging message only when not in production
-    server.server.sendLoggingMessage({
-      level: 'info',
-      message: `${method} ${toolInfo.path} ${JSON.stringify(params)}`,
-      operationObject,
-      parameter: operationObject.parameters,
-      pathParams,
-      queryParams,
-      bodyParams,
-      requestBodyParams,
-    });
+    // server.server.sendLoggingMessage({
+    //   level: 'info',
+    //   message: `${method} ${toolInfo.path} ${JSON.stringify(params)}`,
+    //   operationObject,
+    //   parameter: operationObject.parameters,
+    //   pathParams,
+    //   queryParams,
+    //   bodyParams,
+    //   requestBodyParams,
+    // });
 
     const response = await fetch(url.toString(), {
       method,
