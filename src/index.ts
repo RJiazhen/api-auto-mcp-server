@@ -103,6 +103,15 @@ const main = async () => {
         };
       });
 
+    const requestBodyParams = Object.fromEntries(
+      Object.entries(params)
+        .filter(([key]) => key.startsWith('requestBody-'))
+        .map(([key, value]) => {
+          const requestBodyKey = key.replace('requestBody-', '');
+          return [requestBodyKey, value];
+        }),
+    );
+
     const method = toolInfo.method.toLowerCase();
     const urlWithPathParams = toolInfo.path.replace(
       /\{(\w+)\}/g,
@@ -124,15 +133,16 @@ const main = async () => {
         .join('&') || '';
 
     // XXX change to send logging message only when not in production
-    // server.server.sendLoggingMessage({
-    //   level: 'info',
-    //   message: `${method} ${toolInfo.path} ${JSON.stringify(params)}`,
-    //   operationObject,
-    //   parameter: operationObject.parameters,
-    //   pathParams,
-    //   queryParams,
-    //   bodyParams,
-    // });
+    server.server.sendLoggingMessage({
+      level: 'info',
+      message: `${method} ${toolInfo.path} ${JSON.stringify(params)}`,
+      operationObject,
+      parameter: operationObject.parameters,
+      pathParams,
+      queryParams,
+      bodyParams,
+      requestBodyParams,
+    });
 
     const response = await fetch(url.toString(), {
       method,
@@ -141,6 +151,7 @@ const main = async () => {
         Cookie: cookie,
       },
       ...(method !== 'get' && { body: JSON.stringify(bodyParams) }),
+      ...(method !== 'get' && { body: JSON.stringify(requestBodyParams) }),
     });
     if (!response.ok) {
       throw new Error(`API request failed: ${response.statusText}`);

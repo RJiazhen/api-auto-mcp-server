@@ -51,45 +51,143 @@ export const registerTools = async (
           (param) => 'name' in param && 'in' in param,
         ) || [];
 
+      /** request body */
+      const requestBody = (() => {
+        if (!operation.requestBody) {
+          return undefined;
+        }
+
+        if (!('content' in operation.requestBody)) {
+          return undefined;
+        }
+
+        // TODO handle when requestBody is not a reference object
+
+        if (!operation.requestBody?.content?.['application/json'].schema) {
+          return undefined;
+        }
+
+        const { content } = operation.requestBody;
+        if (!content) {
+          return undefined;
+        }
+
+        if (
+          !content['application/json'].schema ||
+          !('$ref' in content['application/json'].schema)
+        ) {
+          return undefined;
+        }
+
+        const schemaName = content['application/json'].schema.$ref
+          .split('/')
+          .pop();
+
+        if (!schemaName) {
+          return undefined;
+        }
+
+        const schema = openApiDoc.components?.schemas?.[schemaName];
+        if (!schema) {
+          return undefined;
+        }
+
+        return schema;
+      })();
+
+      const requestBodyInputSchema = (() => {
+        if (!requestBody) {
+          return undefined;
+        }
+
+        if (!('properties' in requestBody)) {
+          return undefined;
+        }
+
+        return Object.fromEntries(
+          Object.entries(requestBody.properties || {}).map(([key, value]) => {
+            const { type, required } = value as OpenAPIV3.SchemaObject;
+            const requestBodyKey = `requestBody-${key}`;
+            switch (type) {
+              case 'object':
+                return [
+                  requestBodyKey,
+                  required ? z.object({}) : z.object({}).optional(),
+                ];
+              case 'string':
+                return [
+                  requestBodyKey,
+                  required ? z.string() : z.string().optional(),
+                ];
+              case 'number':
+                return [
+                  requestBodyKey,
+                  required ? z.number() : z.number().optional(),
+                ];
+              case 'integer':
+                return [
+                  requestBodyKey,
+                  required ? z.number() : z.number().optional(),
+                ];
+              case 'boolean':
+                return [
+                  requestBodyKey,
+                  required ? z.boolean() : z.boolean().optional(),
+                ];
+              default:
+                return [
+                  requestBodyKey,
+                  required ? z.any() : z.any().optional(),
+                ];
+            }
+          }),
+        );
+      })();
+
       // Create input schema from parameters
-      const inputSchema: Record<string, z.ZodType> = Object.fromEntries(
-        validParameters.map((param) => {
-          const key = param.name;
-          const value = (() => {
-            const { schema, required } = param;
-            if (!schema) {
-              return required ? z.string() : z.string().optional();
-            }
+      const inputSchema: Record<string, z.ZodType> = {
+        ...Object.fromEntries(
+          validParameters.map((param) => {
+            const key = param.name;
+            const value = (() => {
+              const { schema, required } = param;
+              if (!schema) {
+                return required ? z.string() : z.string().optional();
+              }
 
-            if ('$ref' in schema) {
-              // TODO: handle reference objects
-              return required ? z.any() : z.any().optional();
-            }
+              if ('$ref' in schema) {
+                // TODO: handle reference objects
+                return required ? z.any() : z.any().optional();
+              }
 
-            if (schema.type === 'array') {
-              // TODO: handle array types
-              return required ? z.array(z.any()) : z.array(z.any()).optional();
-            }
+              if (schema.type === 'array') {
+                // TODO: handle array types
+                return required
+                  ? z.array(z.any())
+                  : z.array(z.any()).optional();
+              }
 
-            if (schema.type === undefined) {
-              // TODO: handle undefined types
-              return required ? z.any() : z.any().optional();
-            }
+              if (schema.type === undefined) {
+                // TODO: handle undefined types
+                return required ? z.any() : z.any().optional();
+              }
 
-            const schemaValueMap = {
-              object: z.object({}),
-              string: z.string(),
-              number: z.number(),
-              integer: z.number(),
-              boolean: z.boolean(),
-            };
-            return required
-              ? schemaValueMap[schema.type]
-              : schemaValueMap[schema.type].optional();
-          })();
-          return [key, value];
-        }),
-      );
+              const schemaValueMap = {
+                object: z.object({}),
+                string: z.string(),
+                number: z.number(),
+                integer: z.number(),
+                boolean: z.boolean(),
+              };
+              return required
+                ? schemaValueMap[schema.type]
+                : schemaValueMap[schema.type].optional();
+            })();
+            return [key, value];
+          }),
+        ),
+        ...requestBodyInputSchema,
+      };
 
       const description =
         operation.summary ||
@@ -103,7 +201,7 @@ export const registerTools = async (
             toolId,
             description,
             inputSchema,
-            method,
+            method: method as OpenAPIV3.HttpMethods,
             path,
           },
           params,
