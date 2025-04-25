@@ -35,6 +35,17 @@ npx -y api-auto-mcp-server --openapi-url <your-openapi-json-url> --cookie <your-
 
 <!-- TODO -->
 
+### Develop Environment
+
+- Node.js: >22.14.0
+- Bun: >1.1.43
+
+### Run the MCP server by inspector
+
+```bash
+npx @modelcontextprotocol/inspector bun dev --cwd D:/path/to/this/project --openapi-url your-openapi-json-url --cookie "<your-cookie-name>=<your-cookie-value>"
+```
+
 
 ## License
 
