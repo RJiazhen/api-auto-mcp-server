@@ -1,5 +1,7 @@
 # API Auto MCP Server
 
+[中文文档](./docs/README.zh-CN.md)
+
 API Auto MCP Server is a MCP Server **auto generate tool** by your server's OpenAPI specification. It allow your AI to access your server's API without writing any code.
 
 ## Quick Start
