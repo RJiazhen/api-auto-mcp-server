@@ -1,35 +1,58 @@
-# api-auto-mcp-server
+# API Auto MCP Server
 
-<!-- TODO -->
+API Auto MCP Server is a MCP Server **auto generate tool** by your server's OpenAPI specification. It allow your AI to access your server's API without writing any code.
 
-## Usage
+## Quick Start
 
-### With Visual Studio Code
+You can visit the [api-auto-mcp-server-demo](https://github.com/RJiazhen/api-auto-mcp-server-demo) for a quick start.
 
-Add this to your `mcp.json`
+Or you can follow the steps below to set up the API Auto MCP Server for your own server:
 
-```
-"servers": {
-  "auto-api": {
-    "command": "npx",
-    "args": [
-      "-y",
-      "--openapi-url",
-      "your-openapi-json-url",
-      "--cookie",
-      "your-cookie-name=your-cookie-value"
-    ]
+### With Cursor
+
+Add the `api-auto` mcp server config to your `.cursor/mcp.json`, remember change the url to your own:
+
+```json
+{
+  "mcpServers": {
+    // ... other servers
+    "api-auto": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "api-auto-mcp-server",
+        "--openapi-url",
+        "http://your-openapi-json-url",
+        "--cookie",
+        "auth=your-cookie-here"
+      ]
+    }
   }
 }
 ```
 
-### With Cursor
+### With Visual Studio Code
 
-Add a new MCP server by command:
-```bash
-npx -y api-auto-mcp-server --openapi-url <your-openapi-json-url> --cookie <your-cookie-name>=<your-cookie-value>
+Add this to your `.vscode/mcp.json`, remember change the url to your own:
+
+```json
+{
+  "servers": {
+    // ... other servers
+    "auto-api": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "api-auto-mcp-server",
+        "--openapi-url",
+        "http://your-openapi-json-url",
+        "--cookie",
+        "auth=your-cookie-value"
+      ]
+    }
+  }
+}
 ```
-
 
 ## Development
 
