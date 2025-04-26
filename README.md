@@ -56,8 +56,6 @@ Add this to your `.vscode/mcp.json`, remember change the url to your own:
 
 ## Development
 
-<!-- TODO -->
-
 ### Develop Environment
 
 - Node.js: >22.14.0
@@ -69,6 +67,7 @@ Add this to your `.vscode/mcp.json`, remember change the url to your own:
 npx @modelcontextprotocol/inspector bun dev --cwd D:/path/to/this/project --openapi-url your-openapi-json-url --cookie "<your-cookie-name>=<your-cookie-value>"
 ```
 
+<!-- TODO complete development guide -->
 
 ## License
 
